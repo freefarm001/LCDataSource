@@ -104,11 +104,11 @@
 
 #pragma mark 🍀🍀 lazy load
 
-- (NSMutableArray<NSString *> *)reusedIdentifiers {
-    if (!_reusedIdentifiers) {
-        _reusedIdentifiers = [NSMutableArray arrayWithCapacity:0];
+- (NSMutableSet<NSString *> *)reusedIdentifierSet {
+    if (!_reusedIdentifierSet) {
+        _reusedIdentifierSet = [NSMutableSet setWithCapacity:0];
     }
-    return _reusedIdentifiers;
+    return _reusedIdentifierSet;
 }
 
 @end
