@@ -15,7 +15,7 @@
 
 - (id<LCCellModelProtocol>)modelAtIndexPath:(NSIndexPath *)indexPath;
 
-/** model数组（分section） */
+/** model数组（数据只有一个分组的时候也要把数据放入到数组中） */
 @property (strong, nonatomic) NSArray<NSArray *> *models;
 
 @end

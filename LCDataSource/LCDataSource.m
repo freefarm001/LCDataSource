@@ -11,7 +11,7 @@
 @interface LCDataSource ()
 
 /** 已注册的重用标识符数组 */
-@property (strong, nonatomic) NSMutableArray<NSString *> *reusedIdentifiers;
+@property (strong, nonatomic) NSMutableSet<NSString *> *reusedIdentifierSet;
 
 @end
 
@@ -44,10 +44,8 @@
     
     NSAssert([model conformsToProtocol:@protocol(LCCellModelProtocol)], @"model没有遵守%@协议", NSStringFromProtocol(@protocol(LCCellModelProtocol)));
     
-    //没有注册则注册该标识符
-    if (![self registerReusedIdentifier:model]) {
-        [tableView registerClass:[model cellClass] forCellReuseIdentifier:[model getCellIndetifier]];
-    }
+    //注册重用该标识符
+    [self registerReusedIdentifierWithModel:model andView:tableView];
     
     UITableViewCell<LCCellProtocol> *cell = [tableView dequeueReusableCellWithIdentifier:[model getCellIndetifier] forIndexPath:indexPath];
     
@@ -74,10 +72,8 @@
     
     NSAssert([model conformsToProtocol:@protocol(LCCellModelProtocol)], @"model没有遵守%@协议", NSStringFromProtocol(@protocol(LCCellModelProtocol)));
     
-    //没有注册则注册该标识符
-    if (![self registerReusedIdentifier:model]) {
-        [collectionView registerClass:[model cellClass] forCellWithReuseIdentifier:[model getCellIndetifier]];
-    }
+    //注册重用标识符
+    [self registerReusedIdentifierWithModel:model andView:collectionView];
     
     UICollectionViewCell<LCCellProtocol> *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[model getCellIndetifier] forIndexPath:indexPath];
     
@@ -90,21 +86,21 @@
 
 #pragma mark 🍀🍀 判断当前重用标识符是否已注册
 
-- (BOOL)registerReusedIdentifier:(id<LCCellModelProtocol>)model {
-    BOOL b = NO;
-    for (NSString *reusedIdentifier in self.reusedIdentifiers) {
-        if ([reusedIdentifier isEqualToString:[model getCellIndetifier]]) {
-            b = YES;
-            break;
-        }
-    }
+- (void)registerReusedIdentifierWithModel:(id<LCCellModelProtocol>)model andView:(UIView *)view {
     
-    if (!b) {
-        [self.reusedIdentifiers addObject:[model getCellIndetifier]];
+    if (![self.reusedIdentifierSet containsObject:[model getCellIndetifier]]) {
+        
+        if ([view isKindOfClass:[UITableView class]]) {
+            [(UITableView *)view registerClass:[model cellClass] forCellReuseIdentifier:[model getCellIndetifier]];
+        }
+        
+        if ([view isKindOfClass:[UICollectionView class]]) {
+            [(UICollectionView *)view registerClass:[model cellClass] forCellWithReuseIdentifier:[model getCellIndetifier]];
+        }
+        
+        [self.reusedIdentifierSet addObject:[model getCellIndetifier]];
     }
-    return b;
 }
-
 
 #pragma mark 🍀🍀 lazy load
 
